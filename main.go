@@ -495,7 +495,6 @@ func (h *UserHandler) edituser(c echo.Context) (err error) {
 func main() {
 
 	fmt.Println("Welcome to the server")
-	fmt.Println("123")
 
 	h := UserHandler{}
 
