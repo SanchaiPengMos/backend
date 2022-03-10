@@ -10,8 +10,6 @@ import (
 	"github.com/labstack/echo"
 )
 
-
-
 func Privet(g *echo.Group) {
 
 	g.GET("/user/getuser", GetUser)
@@ -26,18 +24,27 @@ func GetUser(c echo.Context) error {
 	}
 	defer db.Close()
 
-	results, err := db.Query("SELECT * FROM User_test")
+	results, err := db.Query("SELECT id ,fname,lname,username,password,shop_id,role_id,created_date FROM tb_user")
 
 	if err != nil {
 		fmt.Println("result error ->", err)
 	}
-	
+
 	var UserLog []user.User
 	for results.Next() {
 
 		var UserT user.User
 
-		err = results.Scan(&UserT.Id, &UserT.Firstname, &UserT.Lastname)
+		err = results.Scan(
+			&UserT.Id,
+			&UserT.Firstname,
+			&UserT.Lastname,
+			&UserT.Username,
+			&UserT.Pass,
+			&UserT.Shop,
+			&UserT.Role,
+			&UserT.CreateDate,
+		)
 
 		if err != nil {
 			fmt.Println("scan user error ->", err.Error())
