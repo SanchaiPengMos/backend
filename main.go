@@ -2,7 +2,9 @@ package main
 
 import (
 	"net/http"
+	"server/controllers/address"
 	"server/controllers/location"
+	"server/controllers/login"
 	"server/controllers/user"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -25,9 +27,12 @@ func main() {
 	e.Use(middleware.Recover())
 
 	_publicAPI := e.Group("/public/api/v1")
+	_PrivateAPI := e.Group("/private/api/v1")
 
-	user.Privet(_publicAPI)
-	location.Privet(_publicAPI)
+	login.Pubilc(_publicAPI)
+	user.Privet(_PrivateAPI)
+	location.Privet(_PrivateAPI)
+	address.Privet(_PrivateAPI)
 
 	e.Start(":9999")
 
