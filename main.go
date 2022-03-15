@@ -5,6 +5,7 @@ import (
 	"server/controllers/address"
 	"server/controllers/location"
 	"server/controllers/login"
+	"server/controllers/register"
 	"server/controllers/user"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -33,6 +34,7 @@ func main() {
 	user.Privet(_PrivateAPI)
 	location.Privet(_PrivateAPI)
 	address.Privet(_PrivateAPI)
+	register.Privet(_PrivateAPI)
 
 	e.Start(":9999")
 
