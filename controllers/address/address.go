@@ -2,7 +2,7 @@ package address
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 	"net/http"
 	"server/key"
 	"server/models/address"
@@ -10,17 +10,17 @@ import (
 	"github.com/labstack/echo"
 )
 
-func Privet(g *echo.Group) {
+func Pubilc(g *echo.Group) {
 	g.GET("/province", GetProvince)
 	g.GET("/amper", GetAmper)
-	g.GET("/district", GetDistrict )
+	g.GET("/district", GetDistrict)
 }
 
 func GetProvince(c echo.Context) error {
 
 	db, err := sql.Open("mysql", key.Database)
 	if err != nil {
-		fmt.Println("get tb_province", err)
+		log.Println("get tb_province", err)
 	}
 
 	defer db.Close()
@@ -28,7 +28,7 @@ func GetProvince(c echo.Context) error {
 	resultes, err := db.Query("SELECT * FROM tb_province ")
 
 	if err != nil {
-		fmt.Println("result err", err)
+		log.Println("result err", err)
 	}
 
 	var TBProvince []address.Province
@@ -41,7 +41,7 @@ func GetProvince(c echo.Context) error {
 		)
 
 		if err != nil {
-			fmt.Println("scan user error ->", err.Error())
+			log.Println("scan user error ->", err.Error())
 		}
 
 		TBProvince = append(TBProvince, TBProvinceArr)
@@ -61,7 +61,7 @@ func GetAmper(c echo.Context) error {
 
 	db, err := sql.Open("mysql", key.Database)
 	if err != nil {
-		fmt.Println("Database Amper Error", err)
+		log.Println("Database Amper Error", err)
 	}
 	defer db.Close()
 
@@ -70,7 +70,7 @@ func GetAmper(c echo.Context) error {
 	err = db.QueryRow("SELECT * FROM tb_amper WHERE id_province=? ", ProvinceID).Scan(&amper_TB.Id, &amper_TB.Name, &amper_TB.Id_Province)
 
 	if err != nil {
-		fmt.Println("error", err)
+		log.Println("error", err)
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -86,16 +86,16 @@ func GetDistrict(c echo.Context) error {
 
 	db, err := sql.Open("mysql", key.Database)
 	if err != nil {
-		fmt.Println("Database district Error", err)
+		log.Println("Database district Error", err)
 	}
 	defer db.Close()
 
 	var district_TB = new(address.District)
 
-	err = db.QueryRow("SELECT * FROM tb_district WHERE id_amper=? ", DistrictID).Scan(&district_TB.Id, &district_TB.Name, &district_TB.Id_Amper,&district_TB.Zipcode)
+	err = db.QueryRow("SELECT * FROM tb_district WHERE id_amper=? ", DistrictID).Scan(&district_TB.Id, &district_TB.Name, &district_TB.Id_Amper, &district_TB.Zipcode)
 
 	if err != nil {
-		fmt.Println("error", err)
+		log.Println("error", err)
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
