@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"server/key"
-	"server/models/login"
+	"server/models/aut"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -20,7 +20,7 @@ func Pubilc(g *echo.Group) {
 
 func Login(c echo.Context) error {
 
-	data := new(login.Login)
+	data := new(aut.Login)
 
 	body, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
@@ -43,11 +43,10 @@ func Login(c echo.Context) error {
 	err = db.QueryRow("SELECT id,email, password FROM tb_user WHERE email=?", email).Scan(&data.Id, &data.Email, &data.Password)
 
 	if err != nil {
-		fmt.Println("login prepare Error")
-	}
-
-	if err != nil {
 		fmt.Println("err scan", err)
+		return c.JSON(http.StatusOK, echo.Map{
+			"status": false,
+		})
 	}
 
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -71,29 +70,7 @@ func Login(c echo.Context) error {
 
 }
 
-// func createJwtToken(id int) (string, error) {
-
-// 	claims := login.JwtClaims{
-// 		id,
-// 		jwt.StandardClaims{
-// 			ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
-// 		},
-// 	}
-
-// 	rawToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-// 	token, err := rawToken.SignedString([]byte(key.TOKEN_SECRET))
-
-// 	if err != nil {
-
-// 		return "", err
-
-// 	}
-
-// 	return token, nil
-// }
-
-func ValidateToken(token string) (login.JwtClaims, error) {
+func ValidateToken(token string) (aut.JwtClaims, error) {
 
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, isvalid := token.Method.(*jwt.SigningMethodHMAC); !isvalid {
@@ -103,7 +80,7 @@ func ValidateToken(token string) (login.JwtClaims, error) {
 		return []byte(key.TOKEN_SECRET), nil
 	})
 
-	var result login.JwtClaims
+	var result aut.JwtClaims
 	if claims, ok := t.Claims.(jwt.MapClaims); ok && t.Valid {
 		result.Id = int(claims["id"].(float64))
 		return result, nil
