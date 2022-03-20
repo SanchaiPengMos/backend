@@ -10,20 +10,11 @@ import (
 	"github.com/labstack/echo"
 )
 
-func Privet(g *echo.Group) {
-	g.POST("/register", Register )
+func Pubilc(g *echo.Group) {
+	g.POST("/register", Register)
 }
 
 func Register(c echo.Context) error {
-
-	data := new(register.Register)
-
-	if err := c.Bind(data); err != nil {
-		fmt.Println("err ->", err)
-		return c.JSON(http.StatusOK, echo.Map{
-			"status": false,
-		})
-	}
 
 	db, err := sql.Open("mysql", key.Database)
 
@@ -33,23 +24,29 @@ func Register(c echo.Context) error {
 
 	defer db.Close()
 
-	query := "INSERT INTO tb_shop(id_location, tel,image,nameshop,address,id_address,id_amper,id_district,create_date,last_update) VALUES ('$1', $2 ,$3,$4,$5,$6,$7,$8,$9,$10 )"
+	data := new(register.RegisterUser)
 
-	res, err := db.Exec(query)
-
-	if err != nil {
-		fmt.Println("err", err)
+	if err := c.Bind(data); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"status": false,
+		})
 	}
-	affectedRows, err := res.RowsAffected()
+	stmt, err := db.Prepare("INSERT INTO tb_user(id,fname,lname,email,password,role_id) VALUES(?,?,?,?,?,?)")
+
 	if err != nil {
-		fmt.Println("err", err)
+		fmt.Println(err)
+	}
+
+	_, err = stmt.Exec(data.ID, data.Fname, data.Fname, data.Email, data.Password, data.Role_id)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"status":  false,
+			"message": "ชื่อผู้ใช้งานนี้มีอยู่ในระบบแล้ว",
+		})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"status": true,
-		"result": affectedRows,
 	})
-
-	//INSERT INTO `tb_shop` (`id`, `id_location`, `tel`, `image`, `nameshop`, `address`, `id_address`, `create_date`, `last_update`) VALUES (NULL, '1', '0948381309', 'Sanchai', 'Pengboot', '240/7', '1', '2022-03-15', '2022-03-15');
-
 }
