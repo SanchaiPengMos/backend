@@ -1,4 +1,5 @@
-package login
+package aut
+
 
 import "github.com/dgrijalva/jwt-go"
 
