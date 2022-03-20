@@ -7,6 +7,8 @@ import (
 	"server/controllers/login"
 	"server/controllers/register"
 	"server/controllers/user"
+	"server/key"
+	"server/models/aut"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
@@ -27,14 +29,20 @@ func main() {
 
 	e.Use(middleware.Recover())
 
+	var IsToken = middleware.JWTWithConfig(middleware.JWTConfig{
+		Claims:     &aut.JwtClaims{},
+		SigningKey: []byte(key.TOKEN_SECRET),
+	})
+
 	_publicAPI := e.Group("/public/api/v1")
-	_PrivateAPI := e.Group("/private/api/v1")
+	_PrivateAPI := e.Group("/private/api/v1", IsToken)
 
 	login.Pubilc(_publicAPI)
+	address.Pubilc(_publicAPI)
+	register.Pubilc(_publicAPI)
+
 	user.Privet(_PrivateAPI)
 	location.Privet(_PrivateAPI)
-	address.Privet(_PrivateAPI)
-	register.Privet(_PrivateAPI)
 
 	e.Start(":9999")
 
