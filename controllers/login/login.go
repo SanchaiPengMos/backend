@@ -29,10 +29,6 @@ func Login(c echo.Context) error {
 	json.Unmarshal(body, &data)
 
 	email := data.Email
-	// password := data.Password
-
-	// fmt.Println(email)
-	// fmt.Println(data)
 
 	db, err := sql.Open("mysql", key.Database)
 	if err != nil {
@@ -43,8 +39,7 @@ func Login(c echo.Context) error {
 	err = db.QueryRow("SELECT id,email, password FROM tb_user WHERE email=?", email).Scan(&data.Id, &data.Email, &data.Password)
 
 	if err != nil {
-		fmt.Println("err scan", err)
-		return c.JSON(http.StatusOK, echo.Map{
+		return c.JSON(http.StatusBadRequest, echo.Map{
 			"status": false,
 		})
 	}
@@ -55,6 +50,9 @@ func Login(c echo.Context) error {
 	_claims["id"] = data.Id
 
 	tokenString, err := token.SignedString([]byte(key.TOKEN_SECRET))
+
+	fmt.Println(_claims)
+
 	if err != nil {
 		fmt.Println(err)
 		return c.JSON(http.StatusBadRequest, echo.Map{
@@ -67,26 +65,5 @@ func Login(c echo.Context) error {
 		"status": true,
 		"result": tokenString,
 	})
-
-}
-
-func ValidateToken(token string) (aut.JwtClaims, error) {
-
-	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if _, isvalid := token.Method.(*jwt.SigningMethodHMAC); !isvalid {
-			return nil, fmt.Errorf("Invalid token %s", token.Header["alg"])
-
-		}
-		return []byte(key.TOKEN_SECRET), nil
-	})
-
-	var result aut.JwtClaims
-	if claims, ok := t.Claims.(jwt.MapClaims); ok && t.Valid {
-		result.Id = int(claims["id"].(float64))
-		return result, nil
-
-	} else {
-		return result, err
-	}
 
 }
