@@ -12,6 +12,7 @@ import (
 
 func Pubilc(g *echo.Group) {
 	g.POST("/register", Register)
+	g.GET("/check" , RegisterShop )
 }
 
 func Register(c echo.Context) error {
