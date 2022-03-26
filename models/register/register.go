@@ -23,3 +23,11 @@ type RegisterUser struct {
 	Role_id  uint   `json:"role_id" form:"role_id" query:"role_id"`
 	// Create_date time.Time `json:"created_date" form:"created_date" query:"created_date"`
 }
+
+type RegisterShop struct {
+	ID       uint `sql:"primary_key" json:"id" form:"id" query:"id"`
+	NameShop string
+	Lat      float64
+	Long     float64
+	Status   bool
+}
