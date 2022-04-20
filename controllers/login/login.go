@@ -22,6 +22,8 @@ func Login(c echo.Context) error {
 
 	data := new(aut.Login)
 
+	
+
 	body, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
 		fmt.Println("body login err", err)
@@ -29,6 +31,10 @@ func Login(c echo.Context) error {
 	json.Unmarshal(body, &data)
 
 	email := data.Email
+
+	
+	fmt.Println("data :", data)
+	fmt.Println("ee", data.Email )
 
 	db, err := sql.Open("mysql", key.Database)
 	if err != nil {
@@ -51,7 +57,7 @@ func Login(c echo.Context) error {
 
 	tokenString, err := token.SignedString([]byte(key.TOKEN_SECRET))
 
-	fmt.Println(_claims)
+	// fmt.Println(_claims)
 
 	if err != nil {
 		fmt.Println(err)

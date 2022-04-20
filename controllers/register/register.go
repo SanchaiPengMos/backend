@@ -12,7 +12,7 @@ import (
 
 func Pubilc(g *echo.Group) {
 	g.POST("/register", Register)
-	g.GET("/check" , RegisterShop )
+	g.GET("/check", RegisterShop)
 }
 
 func Register(c echo.Context) error {
@@ -46,6 +46,28 @@ func Register(c echo.Context) error {
 			"message": "ชื่อผู้ใช้งานนี้มีอยู่ในระบบแล้ว",
 		})
 	}
+	result, err := db.Query("SELECT * FROM tb_user WHERE email = ?", data.Email)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	user := new(register.RegisterUserA)
+
+	for result.Next() {
+		err := result.Scan(
+			&user.ID,
+			&user.Fname,
+			&user.LName,
+			&user.Email,
+			&user.Password,
+			&user.Role_id,
+		)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	createShop(nil, user.ID)
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"status": true,

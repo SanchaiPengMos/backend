@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"server/key"
-	"server/models/location"
+
+	// "server/models/location"
+	"server/models/shop"
 
 	"github.com/labstack/echo"
 )
@@ -22,29 +24,42 @@ func GetLocation(c echo.Context) error {
 	}
 	defer db.Close()
 
-	result, err := db.Query("SELECT * FROM tb_location ")
+	result, err := db.Query("SELECT * FROM tb_shop WHERE is_open = 1 ")
 
 	if err != nil {
 		fmt.Println("Result err ", err)
 	}
 
-	var LocationA []location.Location
+	var LocationA []shop.ShopManagement
 
 	for result.Next() {
 
-		var Locat location.Location
+		// var Locat location.Location
+		var ABCCC shop.ShopManagement
 
 		err = result.Scan(
-			&Locat.Id,
-			&Locat.Lat,
-			&Locat.Long,
+			&ABCCC.ID,
+			// &ABCCC.Id_Location,
+			&ABCCC.Tel,
+			&ABCCC.Img,
+			&ABCCC.Nameshop,
+			&ABCCC.Address,
+			&ABCCC.IDAddress,
+			&ABCCC.IDAmper,
+			&ABCCC.Id_district,
+			&ABCCC.Create_date,
+			&ABCCC.Last_update,
+			&ABCCC.Lat,
+			&ABCCC.Long,
+			&ABCCC.Id_User,
+			&ABCCC.Is_Open,
 		)
 
 		if err != nil {
 			fmt.Println("scan location err ", err)
 		}
 
-		LocationA = append(LocationA, Locat)
+		LocationA = append(LocationA, ABCCC)
 
 	}
 

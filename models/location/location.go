@@ -5,3 +5,4 @@ type Location struct {
 	Lat  float64 `json:"lat" form:"lat" query:"lat"`
 	Long float64 `json:"lng" form:"lng" query:"lng"`
 }
+
